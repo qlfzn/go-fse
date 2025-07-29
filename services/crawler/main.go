@@ -88,4 +88,15 @@ func main() {
 	if err := crawler.IsBucketExist("ql-bucket"); err != nil {
 		log.Fatalf("Bucket check failed: %v", err)
 	}
+
+	// get objects
+	objectCh := crawler.Client.ListObjects(context.Background(), "ql-bucket", minio.ListObjectsOptions{})
+
+	for object := range objectCh {
+		if object.Err != nil {
+			log.Fatalf("err: %s", object.Err.Error())
+			return
+		}
+		fmt.Println(object.Key, object.Size, object.ChecksumSHA256, object.UserMetadata)
+	}
 }
